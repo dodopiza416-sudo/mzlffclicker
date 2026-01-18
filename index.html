@@ -287,11 +287,55 @@
         let isMinigameActive = false;
         let itemsToCollect = 0;
 
+        // --- Донаты: ники и сообщения ---
+        const donationNames = [
+            "Zritel_1337", "xXx_Mazellov_Fan_xXx", "ПятеркаТОП", "isaac_enjoyer", 
+            "DBD_Killer_Main", "ЛысыйНаСтриме", "Dodster_Lover", "REPOgang",
+            "ЗавертинЧел", "FlashЭнергетик", "ModeratorИлюхи", "TwitchPrime777",
+            "КонцертныйФанат", "БородаИлюхи", "StreamSniper228", "Айзек_Мейн",
+            "ПереsдЧел", "КоробкаСВещами", "FlashБанка", "ЧатикМазеллова",
+            "SubGifter9000", "НочнойЗритель", "ДонатерПрофи", "LurkМастер",
+            "ClipperМазеллова", "EmoteСпамер", "РейдБосс", "ХайпТрейн"
+        ];
+
+        const donationMessages = [
+            "На бритьё бороды!",
+            "Илюха, сыграй в Айзека!",
+            "Маз, ты лучший!",
+            "Когда стрим с Пятёркой?",
+            "ДОДСТЕР КОГДА?!",
+            "Привет с ночного просмотра!",
+            "На новый микрофон!",
+            "Сыграй в DBD за киллера!",
+            "Люблю твои стримы ❤️",
+            "REPO лучшая игра!",
+            "Передай привет чату!",
+            "Завертин красавчик!",
+            "На энергетики для ночных стримов",
+            "Илья, ты когда на концерт?",
+            "Бритва уже едет!",
+            "Лысый Маз - лучший Маз",
+            "За хайповый контент!",
+            "Когда переезд завершится?",
+            "Флеш энергетик залетает!",
+            "Чатик, го спам!",
+            "На новую веб-камеру!",
+            "Рейд от меня скоро будет",
+            "Стримь чаще!",
+            "Айзек рандом когда?",
+            "Топ стример СНГ!",
+            "Борода или лысина - выбирай!",
+            "Мазелов кликер топ игра",
+            "На пиццу для стрима!",
+            "Ночной донат залетает",
+            "Когда коллаб с Завертиным?"
+        ];
+
         // --- Система эволюции (4 стадии по уровням) ---
         const evolutionStages = [
             { level: 0, status: "Новичок", img: "https://avatars.mds.yandex.net/i?id=0044f68bd780d4447cd7cbbe0d361d9640f61828-9154878-images-thumbs&n=13" },
-            { level: 20, status: "Удивленный Илья", img: "https://avatars.mds.yandex.net/i?id=468d8d83f35cf9b8c932e628595aa7e2cd3d3539-4825378-images-thumbs&n=13" },
-            { level: 40, status: "Серьезный Стример", img: "https://avatars.mds.yandex.net/i?id=fd77adf1146c22fdf77bc062599ef82926a2b5eb-10896978-images-thumbs&n=13" },
+            { level: 20, status: "Илья на концерте", img: "https://i.imgur.com/QxHJZKe.jpeg" },
+            { level: 40, status: "Илья с Завертиным", img: "https://i.imgur.com/7YqJ9Wd.jpeg" },
             { level: 60, status: "Хайповый Мазелов", img: "https://avatars.mds.yandex.net/i?id=25539a39c94ad594e840b9bdf92b5b8a8a0c6a7b-4120677-images-thumbs&n=13" },
             { level: 80, status: "Звезда Twitch", img: "https://avatars.mds.yandex.net/get-entity_search/2114271/1230453077/SUx182_2x" }
         ];
@@ -596,8 +640,15 @@
         }
 
         function triggerDonation() {
-            const amount = Math.floor(100 + Math.random() * 2000);
+            const amount = Math.floor(50 + Math.random() * 2500);
+            const randomName = donationNames[Math.floor(Math.random() * donationNames.length)];
+            const randomMessage = donationMessages[Math.floor(Math.random() * donationMessages.length)];
+            
             const alert = document.getElementById('da-alert');
+            document.getElementById('da-user').innerText = randomName;
+            document.getElementById('da-amount').innerText = amount + ' ₽';
+            document.getElementById('da-msg').innerText = '"' + randomMessage + '"';
+            
             alert.classList.add('active');
             rubles += amount;
             setTimeout(() => { alert.classList.remove('active'); updateUI(); saveGame(); }, 4000);
@@ -658,6 +709,10 @@
             }, 15000);
 
             updateUI();
+        };
+    </script>
+</body>
+</html>
         };
     </script>
 </body>
