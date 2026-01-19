@@ -1,9 +1,10 @@
+Lurmy #панамаокда #хедбоб, [20.01.2026 1:00]
 <!DOCTYPE html>
 <html lang="ru">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Mazellov Clicker - Stream Edition</title>
+    <title>Mzlff Clicker</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <link href="https://fonts.googleapis.com/css2?family=Unbounded:wght@400;700&display=swap" rel="stylesheet">
     <style>
@@ -49,7 +50,7 @@
             border-radius: 50%;
             border: 4px solid #a855f7;
             box-shadow: 0 0 30px rgba(168, 85, 247, 0.4);
-            transition: all 0.2s ease;
+            transition: all 0.5s ease;
         }
         .glow-effect {
             position: absolute;
@@ -66,34 +67,112 @@
             border: 2px solid #334155;
             background: #1e293b;
         }
-        ::-webkit-scrollbar {
-            width: 6px;
-        }
-        ::-webkit-scrollbar-track {
-            background: transparent;
-        }
-        ::-webkit-scrollbar-thumb {
-            background: #334155;
+        .donation-alert {
+            position: fixed;
+            top: 20%;
+            left: 50%;
+            transform: translateX(-50%) scale(0.8);
+            background: #ff7534;
+            color: white;
+            padding: 20px 40px;
             border-radius: 10px;
+            box-shadow: 0 0 40px rgba(255, 117, 52, 0.5);
+            z-index: 200;
+            text-align: center;
+            opacity: 0;
+            pointer-events: none;
+            transition: all 0.5s cubic-bezier(0.175, 0.885, 0.32, 1.275);
         }
-        ::-webkit-scrollbar-thumb:hover {
-            background: #a855f7;
+        .donation-alert.active {
+            opacity: 1;
+            transform: translateX(-50%) scale(1);
+        }
+        .minigame-overlay {
+            position: fixed;
+            inset: 0;
+            background: rgba(0,0,0,0.9);
+            z-index: 1000;
+            display: none;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+        }
+        .box-target {
+            width: 200px;
+            height: 200px;
+            background: #4a3728;
+            border: 4px dashed #7a5a41;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            position: relative;
+            margin-top: 50px;
+        }
+        .game-item {
+            position: absolute;
+            cursor: pointer;
+            transition: transform 0.1s;
+            font-size: 2.5rem;
+            user-select: none;
+        }
+        .game-item:active { transform: scale(1.2); }
+
+        .tab-btn.active {
+            border-color: #a855f7;
+            color: #a855f7;
+            background: rgba(168, 85, 247, 0.1);
         }
     </style>
 </head>
 <body class="flex flex-col h-screen overflow-hidden">
 
-    <audio id="bg-music" loop>
+Lurmy #панамаокда #хедбоб, [20.01.2026 1:00]
+<audio id="bg-music" loop>
         <source src="https://www.dropbox.com/scl/fi/th9kidjdf1blqezgqlpcz/.mp3?rlkey=59a6wz4w09v35noavrwbiy081&st=zel497ne&dl=1" type="audio/mpeg">
     </audio>
 
-    <header class="h-16 bg-slate-900/50 border-b border-slate-800 flex justify-between items-center px-6 z-50 backdrop-blur-md">
+    <!-- Donation Alerts UI -->
+    <div id="da-alert" class="donation-alert">
+        <div class="font-black italic text-2xl mb-1 uppercase tracking-tighter">DonationAlerts</div>
+        <div id="da-user" class="font-bold text-lg">ChapaClutch</div>
+        <div id="da-user" class="font-bold text-lg">priyatnogopoleta</div>
+        <div id="da-user" class="font-bold text-lg">vyach</div>
+        <div id="da-amount" class="text-3xl font-black mt-2">500 ₽</div>
+        <div id="da-amount" class="text-3xl font-black mt-2">6789 ₽</div>
+        <div id="da-amount" class="text-3xl font-black mt-2">453 ₽</div>
+        <div id="da-msg" class="text-sm mt-2 opacity-90 italic">"На бритье!"</div>
+        <div id="da-msg" class="text-sm mt-2 opacity-90 italic">"когда смартики?"</div>
+        <div id="da-msg" class="text-sm mt-2 opacity-90 italic">"ии видео идем смотреть ?"</div>
+    </div>
+
+    <!-- Мини-игра Переезд -->
+    <div id="minigame-screen" class="minigame-overlay">
+        <h2 class="text-3xl font-black text-white mb-2 italic">ВРЕМЯ ПЕРЕЕЗДА!</h2>
+        <p class="text-slate-400 mb-8">Успей собрать все вещи в коробку!</p>
+        <div id="minigame-timer" class="text-5xl font-black text-yellow-500 mb-4">10.0</div>
+        
+        <div id="game-area" class="relative w-full max-w-2xl h-[400px] border border-slate-800 bg-slate-900/50 rounded-3xl overflow-hidden">
+            <div class="box-target mx-auto mt-20 rounded-lg">
+                <span class="text-4xl">📦</span>
+            </div>
+            <!-- Вещи будут спавниться тут -->
+        </div>
+    </div>
+
+    <header class="h-20 bg-slate-900/50 border-b border-slate-800 flex justify-between items-center px-6 z-50 backdrop-blur-md">
         <div class="flex items-center gap-6">
             <div class="flex flex-col">
                 <span class="text-[10px] text-slate-500 uppercase font-bold tracking-tighter">Зрители сейчас</span>
                 <div class="flex items-center gap-2">
                     <span class="w-2 h-2 bg-red-500 rounded-full animate-pulse"></span>
                     <span id="viewers-count" class="text-xl font-bold">0</span>
+                </div>
+            </div>
+            <div class="h-8 w-px bg-slate-800"></div>
+            <div class="flex flex-col">
+                <span class="text-[10px] text-orange-400 uppercase font-bold tracking-tighter">Баланс Донатов</span>
+                <div class="flex items-center gap-2">
+                    <span class="text-xl font-bold text-orange-500"><span id="rubles-count">0</span> ₽</span>
                 </div>
             </div>
             <div class="h-8 w-px bg-slate-800"></div>
@@ -112,17 +191,23 @@
         </div>
     </header>
 
-    <main class="flex-1 flex overflow-hidden">
+Lurmy #панамаокда #хедбоб, [20.01.2026 1:00]
+<main class="flex-1 flex overflow-hidden">
+        <!-- Левая часть: Кликер -->
         <div class="flex-1 flex flex-col items-center justify-center p-6 bg-[#020617] relative">
             <div class="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[500px] h-[500px] bg-purple-900/10 blur-[120px] rounded-full"></div>
             
+            <button id="minigame-trigger" onclick="startMinigame()" class="hidden absolute top-10 bg-yellow-500 hover:bg-yellow-400 text-black font-black px-6 py-3 rounded-full shadow-[0_0_30px_rgba(234,179,8,0.4)] animate-bounce z-20">
+                📦 ПОМОЧЬ С ПЕРЕЕЗДОМ!
+            </button>
+
             <div id="main-character" class="cursor-pointer click-btn relative z-10 transition-transform">
                 <div class="glow-effect"></div>
                 <div class="avatar-container">
                     <img src="https://avatars.mds.yandex.net/i?id=0044f68bd780d4447cd7cbbe0d361d9640f61828-9154878-images-thumbs&n=13" 
-                         alt="Mazellov" 
-                         class="avatar-img"
-                         id="avatar">
+                          alt="Mazellov" 
+                          class="avatar-img"
+                          id="avatar">
                     <div id="cooldown-overlay" class="absolute inset-0 flex flex-col items-center justify-center bg-black/60 rounded-full opacity-0 transition-opacity">
                         <span class="text-white font-black text-lg italic tracking-widest">CD</span>
                         <div class="w-12 h-1 bg-purple-500 mt-1 animate-pulse"></div>
@@ -131,7 +216,8 @@
             </div>
 
             <div class="mt-8 text-center z-10">
-                <p class="text-slate-400 text-sm font-bold tracking-widest uppercase opacity-50">Кликай, чтобы поднять онлайн</p>
+                <p id="character-status" class="text-purple-400 text-xs font-bold tracking-widest uppercase mb-1">Начинающий стример</p>
+                <p class="text-slate-400 text-[10px] font-bold tracking-widest uppercase opacity-50">Кликай, чтобы поднять онлайн</p>
                 <div class="mt-4 flex gap-4">
                     <div class="bg-slate-900/80 border border-slate-800 px-6 py-2 rounded-xl">
                         <span class="block text-[10px] text-slate-500 uppercase font-bold">Сила клика</span>
@@ -141,38 +227,60 @@
                         <span class="block text-[10px] text-slate-500 uppercase font-bold">Авто-онлайн</span>
                         <span id="stat-auto" class="text-blue-400 font-bold">0</span>
                     </div>
+                    <div id="boost-indicator" class="hidden bg-orange-500/20 border border-orange-500 px-6 py-2 rounded-xl">
+                        <span class="block text-[10px] text-orange-500 uppercase font-bold">БУСТ X2</span>
+                        <span id="boost-timer" class="text-orange-400 font-bold text-xs">00:00</span>
+                    </div>
                 </div>
             </div>
         </div>
 
+        <!-- Правая часть: Сайдбар -->
         <div id="sidebar" class="w-96 bg-slate-900/30 border-l border-slate-800 flex flex-col backdrop-blur-xl">
-            <div class="p-6 border-b border-slate-800">
-                <label class="text-[10px] font-black text-slate-500 uppercase tracking-widest block mb-2">Активация кода</label>
-                <div class="flex gap-2">
-                    <input type="text" id="promo-input" placeholder="Введите код..." class="flex-1 bg-slate-950 border border-slate-800 rounded-lg px-4 py-2 text-sm outline-none focus:border-purple-500 transition-colors">
-                    <button onclick="checkPromo()" class="bg-purple-600 hover:bg-purple-500 px-4 py-2 rounded-lg text-xs font-bold transition-all shadow-lg shadow-purple-900/20">OK</button>
+            <div class="grid grid-cols-2 border-b border-slate-800">
+                <button onclick="switchTab('upgrades')" id="tab-upgrades" class="tab-btn py-4 text-[10px] font-black uppercase tracking-widest border-b-2 border-transparent transition-all active">Стрим</button>
+                <button onclick="switchTab('boosts')" id="tab-boosts" class="tab-btn py-4 text-[10px] font-black uppercase tracking-widest border-b-2 border-transparent transition-all">Бусты</button>
+            </div>
+
+Lurmy #панамаокда #хедбоб, [20.01.2026 1:00]
+<div id="content-upgrades" class="flex-1 flex flex-col overflow-hidden">
+                <div class="p-4 border-b border-slate-800 bg-slate-950/20">
+                    <label class="text-[9px] font-black text-slate-500 uppercase tracking-widest block mb-2">Промокод</label>
+                    <div class="flex gap-2">
+                        <input type="text" id="promo-input" placeholder="Код..." class="flex-1 bg-slate-950 border border-slate-800 rounded-lg px-3 py-1.5 text-xs outline-none focus:border-purple-500 transition-colors">
+                        <button onclick="checkPromo()" class="bg-purple-600 hover:bg-purple-500 px-3 py-1.5 rounded-lg text-xs font-bold transition-all">OK</button>
+                    </div>
+                </div>
+                <div class="flex-1 overflow-y-auto p-4 space-y-3">
+                    <div id="shop-list" class="space-y-3"></div>
+                </div>
+            </div>
+
+            <div id="content-boosts" class="hidden flex-1 flex flex-col overflow-hidden">
+                <div class="p-4 border-b border-slate-800 bg-orange-950/10">
+                    <p class="text-[10px] text-orange-400 font-bold leading-relaxed uppercase italic">Магазин за донаты</p>
+                </div>
+                <div class="flex-1 overflow-y-auto p-4 space-y-3">
+                    <div id="boost-shop-list" class="space-y-3"></div>
                 </div>
             </div>
             
-            <div class="flex-1 overflow-y-auto p-6 space-y-4">
-                <h2 class="text-xs font-black text-slate-500 uppercase tracking-widest mb-2">Улучшения стрима</h2>
-                <div id="shop-list" class="space-y-3"></div>
-            </div>
-            
-            <div class="p-4 text-center">
-                <p class="text-[9px] text-slate-600 uppercase font-bold">Mazellov Clicker v2.8 (Local Save)</p>
+            <div class="p-4 text-center border-t border-slate-800">
+                <p class="text-[9px] text-slate-600 uppercase font-bold tracking-tighter">Mazellov Clicker v3.6 | Character Evolution</p>
             </div>
         </div>
     </main>
 
-    <div id="toast" class="fixed bottom-10 left-1/2 -translate-x-1/2 bg-white text-black px-8 py-3 rounded-2xl font-bold opacity-0 transition-all pointer-events-none z-[100] shadow-2xl flex items-center gap-3 scale-90">
+    <div id="toast" class="fixed bottom-10 left-1/2 -translate-x-1/2 bg-white text-black px-8 py-3 rounded-2xl font-bold opacity-0 transition-all pointer-events-none z-[1100] shadow-2xl flex items-center gap-3 scale-90">
         <span id="toast-icon">✨</span>
         <span id="toast-text">Успех!</span>
     </div>
 
     <script>
-        // --- Game State ---
+        // --- Состояние игры ---
         let viewers = 0;
+        let rubles = 0;
+        let totalRubles = 0;
         let clickPower = 1;
         let autoViewers = 0;
         let hypeThreshold = 100;
@@ -182,160 +290,89 @@
         let onCooldown = false;
         const COOLDOWN_TIME = 400;
 
-        const upgrades = [
-            { 
-                id: 'mic', 
-                name: 'Микрофон Fifine', 
-                desc: '+1 к клику', 
-                cost: 15, 
-                power: 1, 
-                type: 'click',
-                img: 'https://avatars.mds.yandex.net/get-mpic/15300889/2a0000019686653154ef0e69295a9ed5a7a4/orig'
-            },
-            { 
-                id: 'chat', 
-                name: 'Модератор чата', 
-                desc: '+1 зрит/сек', 
-                cost: 100, 
-                power: 1, 
-                type: 'auto',
-                img: 'https://avatars.mds.yandex.net/i?id=4d81bcab882f2018cdd662f230207652e7eb19f1-4669930-images-thumbs&n=13'
-            },
-            { 
-                id: 'cam', 
-                name: 'Веб-камера', 
-                desc: '+5 к клику', 
-                cost: 500, 
-                power: 5, 
-                type: 'click',
-                img: 'https://avatars.mds.yandex.net/i?id=e97813f7bdef1d583e7b35ea3d10f54a6666b46c-9856775-images-thumbs&n=13'
-            },
-            { 
-                id: 'isaac', 
-                name: 'Поиграть в Айзека', 
-                desc: '+12 к клику', 
-                cost: 1200, 
-                power: 12, 
-                type: 'click',
-                img: 'https://avatars.mds.yandex.net/i?id=61a36ff26d3b84a40547af82afb4634ac6e441a9-12372285-images-thumbs&n=13'
-            },
-            { 
-                id: 'reid', 
-                name: 'Рейд стримеров', 
-                desc: '+15 зрит/сек', 
-                cost: 2000, 
-                power: 15, 
-                type: 'auto',
-                img: 'https://www.dropbox.com/scl/fi/va0gef5glicihg1ysp76c/137_20260117175356.jpg?rlkey=kieh2dzfcmr28q68z8okjfwzm&st=0rrjgigv&dl=1'
-            },
-            { 
-                id: 'dbd', 
-                name: 'Поиграть в ДБД', 
-                desc: '+40 зрит/сек', 
-                cost: 8000, 
-                power: 40, 
-                type: 'auto',
-                img: 'https://www.dropbox.com/scl/fi/a8wl5lga2ud5uludylqzw/137_20260117181217.jpg?rlkey=icjxya1fi4o5pluu6k4uxqrjq&st=30id8avd&dl=1'
-            },
-            { 
-                id: 'dodster', 
-                name: 'Додстер', 
-                desc: '+120 к клику', 
-                cost: 15000, 
-                power: 120, 
-                type: 'click',
-                img: 'https://avatars.mds.yandex.net/i?id=b1927f7f92a8bcc8589c37d437faa988853dadcc-8271622-images-thumbs&n=13'
-            },
-            { 
-                id: 'repo', 
-                name: 'R.E.P.O.', 
-                desc: '+250 к клику', 
-                cost: 45000, 
-                power: 250, 
-                type: 'click',
-                img: 'https://www.dropbox.com/scl/fi/tsqlohxnz7fzp9mkkcenx/137_20260117181201.jpg?rlkey=mf0rolk3d2dm74mdxfz7sh57k&st=rwl38eke&dl=1'
-            },
-            { 
-                id: 'pc', 
-                name: 'Игровой ПК', 
-                desc: '+50 к клику', 
-                cost: 75000, 
-                power: 50, 
-                type: 'click',
-                img: 'https://power-art.ru/wa-data/public/shop/products/38/22/32238/images/81636/81636.970.png'
-            },
-            { 
-                id: 'studio', 
-                name: 'Своя студия', 
-                desc: '+150 зрит/сек', 
-                cost: 100000, 
-                power: 150, 
-                type: 'auto',
-                img: 'https://avatars.mds.yandex.net/i?id=f4eb8d160c3420b513bde12b90f27bb0c6ae63eb-10091199-images-thumbs&n=13'
-            }
+        let activeBoostMultiplier = 1;
+        let boostEndTime = 0;
+
+        // Состояние мини-игры
+        let isMinigameActive = false;
+        let itemsToCollect = 0;
+
+        // --- Система эволюции (4 стадии по уровням) ---
+        const evolutionStages = [
+            { level: 0, status: "Новичок", img: "https://avatars.mds.yandex.net/i?id=0044f68bd780d4447cd7cbbe0d361d9640f61828-9154878-images-thumbs&n=13" },
+            { level: 20, status: "Илья на концерте", img: "https://avatars.mds.yandex.net/i?id=468d8d83f35cf9b8c932e628595aa7e2cd3d3539-4825378-images-thumbs&n=13" },
+            { level: 40, status: "Илья с Завертиным", img: "https://avatars.mds.yandex.net/i?id=fd77adf1146c22fdf77bc062599ef82926a2b5eb-10896978-images-thumbs&n=13" },
+            { level: 60, status: "Хайповый илья", img: "https://avatars.mds.yandex.net/i?id=25539a39c94ad594e840b9bdf92b5b8a8a0c6a7b-4120677-images-thumbs&n=13" },
+            { level: 80, status: "Звезда Twitch", img: "https://avatars.mds.yandex.net/get-entity_search/2114271/1230453077/SUx182_2x" }
         ];
 
-        let promos = {
-            'MAZELLOV': { reward: 1000, used: false, msg: "МАЗЕЛОВ ДАЛ 1000 ЗРИТЕЛЕЙ!" },
-            '5': { reward: 5555, used: false, msg: "ПЯТЕРКА ЗАЛЕТЕЛ НА СТРИМ!" },
-            'SHAVE': { reward: 50000, used: false, msg: "ИЛЬЯ ПОБРИЛСЯ НАЛЫСО!" }
-        };
+Lurmy #панамаокда #хедбоб, [20.01.2026 1:00]
+const upgrades = [
+            { id: 'mic', name: 'Микрофон Fifine', desc: '+1 к клику', cost: 15, power: 1, type: 'click', img: 'https://avatars.mds.yandex.net/get-mpic/15300889/2a0000019686653154ef0e69295a9ed5a7a4/orig' },
+            { id: 'chat', name: 'Модератор чата', desc: '+1 зрит/сек', cost: 100, power: 1, type: 'auto', img: 'https://avatars.mds.yandex.net/i?id=4d81bcab882f2018cdd662f230207652e7eb19f1-4669930-images-thumbs&n=13' },
+            { id: 'cam', name: 'Веб-камера', desc: '+5 к клику', cost: 500, power: 5, type: 'click', img: 'https://avatars.mds.yandex.net/i?id=e97813f7bdef1d583e7b35ea3d10f54a6666b46c-9856775-images-thumbs&n=13' },
+            { id: 'isaac', name: 'Поиграть в Айзека', desc: '+12 к клику', cost: 1200, power: 12, type: 'click', img: 'https://avatars.mds.yandex.net/i?id=61a36ff26d3b84a40547af82afb4634ac6e441a9-12372285-images-thumbs&n=13' },
+            { id: 'reid', name: 'Рейд стримеров', desc: '+15 зрит/сек', cost: 2000, power: 15, type: 'auto', img: 'https://www.dropbox.com/scl/fi/va0gef5glicihg1ysp76c/137_20260117175356.jpg?rlkey=kieh2dzfcmr28q68z8okjfwzm&st=0rrjgigv&dl=1' },
+            { id: 'dbd', name: 'Поиграть в ДБД', desc: '+40 зрит/сек', cost: 8000, power: 40, type: 'auto', img: 'https://www.dropbox.com/scl/fi/a8wl5lga2ud5uludylqzw/137_20260117181217.jpg?rlkey=icjxya1fi4o5pluu6k4uxqrjq&st=30id8avd&dl=1' },
+            { id: 'dodster', name: 'Додстер', desc: '+120 к клику', cost: 15000, power: 120, type: 'click', img: 'https://avatars.mds.yandex.net/i?id=b1927f7f92a8bcc8589c37d437faa988853dadcc-8271622-images-thumbs&n=13' },
+            { id: 'repo', name: 'R.E.P.O.', desc: '+250 к клику', cost: 45000, power: 250, type: 'click', img: 'https://www.dropbox.com/scl/fi/tsqlohxnz7fzp9mkkcenx/137_20260117181201.jpg?rlkey=mf0rolk3d2dm74mdxfz7sh57k&st=rwl38eke&dl=1' },
+            { id: 'pc', name: 'Игровой ПК', desc: '+500 к клику', cost: 120000, power: 500, type: 'click', img: 'https://power-art.ru/wa-data/public/shop/products/38/22/32238/images/81636/81636.970.png' },
+            { id: 'studio', name: 'Своя студия', desc: '+250 зрит/сек', cost: 250000, power: 250, type: 'auto', img: 'https://avatars.mds.yandex.net/i?id=f4eb8d160c3420b513bde12b90f27bb0c6ae63eb-10091199-images-thumbs&n=13' }
+        ];
+
+        const boostItems = [
+            { id: 'x2_1min', name: 'Энергетик Flash', desc: 'X2 клик на 60 сек', cost: 500, duration: 60, multiplier: 2 },
+            { id: 'x3_2min', name: 'Кофе от Пятерки', desc: 'X3 клик на 120 сек', cost: 1500, duration: 120, multiplier: 3 },
+            { id: 'perm_x1_1', name: 'Золотая подписка', desc: '+20% к доходам (навсегда)', cost: 10000, multiplier: 1.2, permanent: true }
+        ];
 
         let upgradesOwned = {};
+        let boostsOwned = {};
+        let promos = {
+            'MAZELLOV': { type: 'viewers', reward: 1000, used: false, msg: "МАЗЕЛОВ ДАЛ 1000 ЗРИТЕЛЕЙ!" },
+            '5': { type: 'viewers', reward: 5555, used: false, msg: "ПЯТЕРКА ЗАЛЕТЕЛ НА СТРИМ!" },
+            'SHAVE': { type: 'viewers', reward: 50000, used: false, msg: "ИЛЬЯ ПОБРИЛСЯ НАЛЫСО!" },
+            'MZLFF': { type: 'viewers', reward: 500, used: false, msg: "ПРОМОКОД MZLFF: +500 ЗРИТЕЛЕЙ!" },
+            '20': { type: 'level', target: 20, used: false, msg: "УРОВЕНЬ ХАЙПА 20 УСТАНОВЛЕН!" },
+            '40': { type: 'level', target: 40, used: false, msg: "УРОВЕНЬ ХАЙПА 40 УСТАНОВЛЕН!" },
+            '60': { type: 'level', target: 60, used: false, msg: "УРОВЕНЬ ХАЙПА 60 УСТАНОВЛЕН!" },
+            '80': { type: 'level', target: 80, used: false, msg: "УРОВЕНЬ ХАЙПА 80 УСТАНОВЛЕН!" }
+        };
 
-        const viewersEl = document.getElementById('viewers-count');
+Lurmy #панамаокда #хедбоб, [20.01.2026 1:00]
+const viewersEl = document.getElementById('viewers-count');
+        const rublesEl = document.getElementById('rubles-count');
         const avatar = document.getElementById('avatar');
         const shopList = document.getElementById('shop-list');
+        const boostShopList = document.getElementById('boost-shop-list');
         const hypeProgress = document.getElementById('hype-progress');
         const hypeLevelEl = document.getElementById('hype-level');
         const bgMusic = document.getElementById('bg-music');
         const musicBtn = document.getElementById('music-toggle');
+        const statusEl = document.getElementById('character-status');
 
-        // --- Persistent Storage Logic ---
         function saveGame() {
-            const gameState = {
-                viewers,
-                clickPower,
-                autoViewers,
-                hypeThreshold,
-                currentHype,
-                level,
-                upgradesOwned,
-                promos
-            };
-            localStorage.setItem('mazellov_clicker_v2_8', JSON.stringify(gameState));
+            const gameState = { viewers, rubles, totalRubles, clickPower, autoViewers, hypeThreshold, currentHype, level, upgradesOwned, boostsOwned, promos };
+            localStorage.setItem('mazellov_clicker_v3_6', JSON.stringify(gameState));
         }
 
         function loadGame() {
-            const saved = localStorage.getItem('mazellov_clicker_v2_8');
+            const saved = localStorage.getItem('mazellov_clicker_v3_6');
             if (saved) {
                 try {
                     const data = JSON.parse(saved);
-                    viewers = data.viewers || 0;
-                    clickPower = data.clickPower || 1;
-                    autoViewers = data.autoViewers || 0;
-                    hypeThreshold = data.hypeThreshold || 100;
-                    currentHype = data.currentHype || 0;
-                    level = data.level || 1;
-                    upgradesOwned = data.upgradesOwned || {};
+                    if (data.viewers !== undefined) viewers = data.viewers;
+                    if (data.rubles !== undefined) rubles = data.rubles;
+                    if (data.clickPower !== undefined) clickPower = data.clickPower;
+                    if (data.autoViewers !== undefined) autoViewers = data.autoViewers;
+                    if (data.hypeThreshold !== undefined) hypeThreshold = data.hypeThreshold;
+                    if (data.currentHype !== undefined) currentHype = data.currentHype;
+                    if (data.level !== undefined) level = data.level;
+                    if (data.upgradesOwned) upgradesOwned = data.upgradesOwned;
+                    if (data.boostsOwned) boostsOwned = data.boostsOwned;
                     if (data.promos) promos = data.promos;
-                } catch (e) {
-                    console.error("Failed to load save", e);
-                }
+                } catch (e) { console.error(e); }
             }
-        }
-
-        // --- Game Mechanics ---
-        function toggleMusic() {
-            if (isMusicPlaying) {
-                bgMusic.pause(); musicBtn.innerText = '🔇';
-            } else {
-                bgMusic.play().catch(e => {
-                    showToast("Нажмите на экран для звука", "🎵");
-                }); 
-                musicBtn.innerText = '🔊';
-            }
-            isMusicPlaying = !isMusicPlaying;
         }
 
         function formatNumber(num) {
@@ -357,19 +394,95 @@
             }, 3000);
         }
 
+        function setLevel(target) {
+            level = target;
+            currentHype = 0;
+            let baseThreshold = 100;
+            for(let i = 1; i < level; i++) {
+                baseThreshold = Math.floor(baseThreshold * 1.8);
+            }
+            hypeThreshold = baseThreshold;
+        }
+
+Lurmy #панамаокда #хедбоб, [20.01.2026 1:00]
+function checkPromo() {
+            const input = document.getElementById('promo-input');
+            const code = input.value.toUpperCase().trim();
+            if (promos[code]) {
+                if (!promos[code].used) {
+                    if (promos[code].type === 'viewers') {
+                        viewers += promos[code].reward;
+                        currentHype += promos[code].reward;
+                    } else if (promos[code].type === 'level') {
+                        setLevel(promos[code].target);
+                    }
+                    
+                    promos[code].used = true;
+                    showToast(promos[code].msg, '🎁');
+                    input.value = '';
+                    
+                    while (currentHype >= hypeThreshold) {
+                        currentHype -= hypeThreshold;
+                        level++;
+                        hypeThreshold = Math.floor(hypeThreshold * 1.8);
+                    }
+                    
+                    updateUI();
+                    saveGame();
+                } else {
+                    showToast("ПРОМОКОД УЖЕ ИСПОЛЬЗОВАН", '❌');
+                }
+            } else {
+                showToast("НЕВЕРНЫЙ ПРОМОКОД", '❓');
+            }
+        }
+
         function updateUI() {
             viewersEl.innerText = formatNumber(viewers);
+            rublesEl.innerText = formatNumber(rubles);
             const progress = (currentHype / hypeThreshold) * 100;
             hypeProgress.style.width = Math.min(progress, 100) + '%';
             hypeLevelEl.innerText = 'LVL ' + level;
-            document.getElementById('stat-click').innerText = '+' + formatNumber(clickPower);
-            document.getElementById('stat-auto').innerText = formatNumber(autoViewers) + '/s';
+            
+            // Логика эволюции (макс 80+)
+            let currentStage = evolutionStages[0];
+            for (let stage of evolutionStages) {
+                if (level >= stage.level) {
+                    currentStage = stage;
+                }
+            }
+            if (avatar.src !== currentStage.img) {
+                avatar.src = currentStage.img;
+                statusEl.innerText = currentStage.status;
+                showToast(ЭВОЛЮЦИЯ: ${currentStage.status}, '🌟');
+            }
 
-            upgrades.forEach(upg => {
+            let permMult = 1;
+            Object.keys(boostsOwned).forEach(id => {
+                const item = boostItems.find(b => b.id === id);
+                if (item.permanent) permMult *= (1 + (item.multiplier - 1) * boostsOwned[id]);
+            });
+
+            const currentPower = clickPower * activeBoostMultiplier * permMult;
+            document.getElementById('stat-click').innerText = '+' + formatNumber(currentPower);
+            document.getElementById('stat-auto').innerText = formatNumber(autoViewers * permMult) + '/s';
+
+            const boostIndicator = document.getElementById('boost-indicator');
+            if (activeBoostMultiplier > 1 && Date.now() < boostEndTime) {
+                boostIndicator.classList.remove('hidden');
+                const timeLeft = Math.max(0, Math.floor((boostEndTime - Date.now()) / 1000));
+                document.getElementById('boost-timer').innerText = 00:${timeLeft.toString().padStart(2, '0')};
+            } else {
+                activeBoostMultiplier = 1;
+                boostIndicator.classList.add('hidden');
+            }
+
+Lurmy #панамаокда #хедбоб, [20.01.2026 1:00]
+upgrades.forEach(upg => {
                 const btn = document.getElementById('btn-' + upg.id);
-                const count = upgradesOwned[upg.id] || 0;
-                const cost = Math.floor(upg.cost * Math.pow(1.35, count));
                 if (btn) {
+                    const count = upgradesOwned[upg.id]  0;
+                    const cost = Math.floor(upg.cost * Math.pow(1.35, count));
                     btn.querySelector('.cost').innerText = formatNumber(cost);
                     btn.querySelector('.count').innerText = count;
                     btn.disabled = viewers < cost;
@@ -378,16 +491,92 @@
             });
         }
 
+        function switchTab(tab) {
+            document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
+            document.getElementById('tab-' + tab).classList.add('active');
+            document.getElementById('content-upgrades').classList.toggle('hidden', tab !== 'upgrades');
+            document.getElementById('content-boosts').classList.toggle('hidden', tab !== 'boosts');
+        }
+
+        function startMinigame() {
+            document.getElementById('minigame-trigger').classList.add('hidden');
+            isMinigameActive = true;
+            const screen = document.getElementById('minigame-screen');
+            const area = document.getElementById('game-area');
+            const timerEl = document.getElementById('minigame-timer');
+            screen.style.display = 'flex';
+            
+            area.querySelectorAll('.game-item').forEach(i => i.remove());
+            
+            const itemEmojis = ['🎸', '💻', '🧥', '🍔', '🕶', '🎤', '📚', '🧸'];
+            itemsToCollect = 8;
+            
+            for (let i = 0; i < itemsToCollect; i++) {
+                const item = document.createElement('div');
+                item.className = 'game-item';
+                item.innerText = itemEmojis[i % itemEmojis.length];
+                item.style.left = (Math.random() * 80 + 10) + '%';
+                item.style.top = (Math.random() * 60 + 20) + '%';
+                item.onclick = (e) => {
+                    e.stopPropagation();
+                    item.style.transition = 'all 0.4s';
+                    item.style.left = '50%';
+                    item.style.top = '25%';
+                    item.style.opacity = '0';
+                    item.style.pointerEvents = 'none';
+                    itemsToCollect--;
+                    if (itemsToCollect === 0) finishMinigame(true);
+                };
+                area.appendChild(item);
+            }
+
+            let timeLeft = 10.0;
+            const timerInterval = setInterval(() => {
+                timeLeft -= 0.1;
+                timerEl.innerText = timeLeft.toFixed(1);
+                if (timeLeft <= 0) {
+                    clearInterval(timerInterval);
+                    if (itemsToCollect > 0) finishMinigame(false);
+                }
+                if (itemsToCollect === 0) {
+                    clearInterval(timerInterval);
+                }
+            }, 100);
+        }
+
+        function finishMinigame(win) {
+            isMinigameActive = false;
+            const screen = document.getElementById('minigame-screen');
+            screen.style.display = 'none';
+            if (win) {
+                activeBoostMultiplier = 2;
+                boostEndTime = Date.now() + 20000;
+                showToast("ПЕРЕЕЗД УСПЕШЕН! БУСТ X2 НА 20 СЕК", '📦');
+            } else {
+                showToast("НЕ УСПЕЛ СОБРАТЬ ВЕЩИ...", '❌');
+            }
+            updateUI();
+        }
+
         document.getElementById('main-character').addEventListener('mousedown', (e) => {
             if (onCooldown) return;
-            viewers += clickPower;
-            currentHype += clickPower;
+            let permMult = 1;
+            Object.keys(boostsOwned).forEach(id => {
+                const item = boostItems.find(b => b.id === id);
+                if (item.permanent) permMult *= (1 + (item.multiplier - 1) * boostsOwned[id]);
+            });
+
+            const power = clickPower * activeBoostMultiplier * permMult;
+            viewers += power;
+            currentHype += power;
             
             const el = document.createElement('div');
-            el.className = 'floating-text text-purple-400';
-            el.style.left = e.clientX + 'px';
-            el.style.top = e.clientY + 'px';
-            el.innerText = '+' + formatNumber(clickPower);
+            el.className =
+
+Lurmy #панамаокда #хедбоб, [20.01.2026 1:00]
+'floating-text text-purple-400';
+            el.style.left = e.clientX + 'px'; el.style.top = e.clientY + 'px';
+            el.innerText = '+' + formatNumber(power);
             document.body.appendChild(el);
             setTimeout(() => el.remove(), 800);
 
@@ -395,28 +584,24 @@
                 currentHype -= hypeThreshold;
                 level++;
                 hypeThreshold = Math.floor(hypeThreshold * 1.8);
-                showToast(`НОВЫЙ УРОВЕНЬ ХАЙПА: ${level}`, '🔥');
+                showToast(`LVL UP: ${level}`, '🔥');
             }
 
             onCooldown = true;
             avatar.classList.add('cooldown');
             document.getElementById('cooldown-overlay').style.opacity = '1';
-            
             setTimeout(() => {
                 onCooldown = false;
                 avatar.classList.remove('cooldown');
                 document.getElementById('cooldown-overlay').style.opacity = '0';
             }, COOLDOWN_TIME);
-            
             updateUI();
-            saveGame();
         });
 
         function buyUpgrade(id) {
             const upg = upgrades.find(u => u.id === id);
-            const count = upgradesOwned[id] || 0;
+            const count = upgradesOwned[id]  0;
             const cost = Math.floor(upg.cost * Math.pow(1.35, count));
-            
             if (viewers >= cost) {
                 viewers -= cost;
                 upgradesOwned[id] = count + 1;
@@ -427,65 +612,53 @@
             }
         }
 
-        function checkPromo() {
-            const input = document.getElementById('promo-input');
-            const code = input.value.toUpperCase().trim();
-            if (promos[code]) {
-                if (promos[code].used) {
-                    showToast("УЖЕ ИСПОЛЬЗОВАНО", '❌');
-                } else {
-                    viewers += promos[code].reward;
-                    currentHype += promos[code].reward;
-                    promos[code].used = true;
-                    showToast(promos[code].msg, '💰');
-                    updateUI();
-                    saveGame();
-                }
-            } else {
-                showToast("НЕВЕРНЫЙ КОД", '❓');
-            }
-            input.value = "";
+        function triggerDonation() {
+            const amount = Math.floor(100 + Math.random() * 2000);
+            const alert = document.getElementById('da-alert');
+            alert.classList.add('active');
+            rubles += amount;
+            setTimeout(() => { alert.classList.remove('active'); updateUI(); saveGame(); }, 4000);
+        }
+
+        function toggleMusic() {
+            if (isMusicPlaying) { bgMusic.pause(); musicBtn.innerText = '🔇'; }
+            else { bgMusic.play(); musicBtn.innerText = '🔊'; }
+            isMusicPlaying = !isMusicPlaying;
         }
 
         window.onload = () => {
             loadGame();
-            
-            const sortedUpgrades = [...upgrades].sort((a, b) => a.cost - b.cost);
-            
-            sortedUpgrades.forEach(upg => {
+            upgrades.sort((a,b)=>a.cost-b.cost).forEach(upg => {
                 const btn = document.createElement('button');
                 btn.id = 'btn-' + upg.id;
-                btn.className = 'w-full text-left p-4 bg-slate-800/50 border border-slate-700 rounded-xl hover:border-purple-500 hover:bg-slate-800 transition-all flex items-center gap-4 outline-none group';
-                
-                const iconHtml = upg.img ? `<img src="${upg.img}" class="upgrade-icon" alt="${upg.name}">` : `<div class="upgrade-icon bg-slate-700 flex items-center justify-center text-xs">📦</div>`;
-
-                btn.innerHTML = `
-                    ${iconHtml}
-                    <div class="flex-1">
-                        <div class="font-bold text-sm group-hover:text-purple-400 transition-colors">${upg.name}</div>
-                        <div class="text-[10px] text-slate-500">${upg.desc}</div>
-                    </div>
-                    <div class="text-right">
-                        <div class="text-white font-bold text-sm"><span class="cost">${upg.cost}</span> 👁️</div>
-                        <div class="text-[9px] text-slate-500 uppercase font-bold">LVL: <span class="count">0</span></div>
-                    </div>
-                `;
+                btn.className = 'w-full text-left p-4 bg-slate-800/30 border border-slate-700/50 rounded-xl hover:bg-slate-800 flex items-center gap-4';
+                btn.innerHTML = <img src="${upg.img}" class="upgrade-icon"><div><div class="font-bold text-[11px]">${upg.name}</div><div class="text-[8px] text-slate-500 uppercase">${upg.desc}</div></div><div class="ml-auto text-right"><div class="text-white font-bold text-xs"><span class="cost"></span> 👁</div><div class="text-[8px] text-slate-500 uppercase">Lvl <span class="count"></span></div></div>;
                 btn.onclick = () => buyUpgrade(upg.id);
                 shopList.appendChild(btn);
             });
 
-            // Game Loop for Auto-viewers
-            setInterval(() => {
-                if (autoViewers > 0) {
-                    viewers += autoViewers / 10;
-                    currentHype += autoViewers / 10;
-                    updateUI();
-                }
-            }, 100);
-
-            // Frequent Auto-save
-            setInterval(saveGame, 5000);
-            
+Lurmy #панамаокда #хедбоб, [20.01.2026 1:00]
+boostItems.forEach(item => {
+                const btn = document.createElement('button');
+                btn.id = 'boost-btn-' + item.id;
+                btn.className = 'w-full text-left p-4 bg-orange-950/10 border border-orange-500/20 rounded-xl hover:bg-orange-500/20 flex items-center gap-4';
+                btn.innerHTML = <div class="text-2xl">${item.permanent ? '👑' : '⚡️'}</div><div class="flex-1"><div class="font-bold text-[11px]">${item.name}</div><div class="text-[8px] text-orange-400 uppercase">${item.desc}</div></div><div class="text-orange-400 font-black text-xs">${item.cost} ₽</div>;
+                btn.onclick = () => {
+                     // Placeholder for boost logic if needed
+                     if(rubles >= item.cost) {
+                         rubles -= item.cost;
+                         if(item.permanent) {
+                             boostsOwned[item.id] = (boostsOwned[item.id] || 0) + 1;
+                         } else {
+                             activeBoostMultiplier = item.multiplier;
+                             boostEndTime = Date.now() + item.duration * 1000;
+                         }
+                         updateUI();
+                         saveGame();
+                     }
+                };
+                boostShopList.appendChild(btn);
+            });
             updateUI();
         };
     </script>
