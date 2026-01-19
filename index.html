@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Mazellov Clicker - Stream Edition</title>
+    <title>Mzlff Clicker</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <link href="https://fonts.googleapis.com/css2?family=Unbounded:wght@400;700&display=swap" rel="stylesheet">
     <style>
@@ -132,9 +132,15 @@
     <!-- Donation Alerts UI -->
     <div id="da-alert" class="donation-alert">
         <div class="font-black italic text-2xl mb-1 uppercase tracking-tighter">DonationAlerts</div>
-        <div id="da-user" class="font-bold text-lg">Zritel_1337</div>
+        <div id="da-user" class="font-bold text-lg">ChapaClutch</div>
+        <div id="da-user" class="font-bold text-lg">priyatnogopoleta</div>
+        <div id="da-user" class="font-bold text-lg">vyach</div>
         <div id="da-amount" class="text-3xl font-black mt-2">500 ₽</div>
+        <div id="da-amount" class="text-3xl font-black mt-2">6789 ₽</div>
+        <div id="da-amount" class="text-3xl font-black mt-2">453 ₽</div>
         <div id="da-msg" class="text-sm mt-2 opacity-90 italic">"На бритье!"</div>
+        <div id="da-msg" class="text-sm mt-2 opacity-90 italic">"когда смартики?"</div>
+        <div id="da-msg" class="text-sm mt-2 opacity-90 italic">"ии видео идем смотреть ?"</div>
     </div>
 
     <!-- Мини-игра Переезд -->
@@ -196,9 +202,9 @@
                 <div class="glow-effect"></div>
                 <div class="avatar-container">
                     <img src="https://avatars.mds.yandex.net/i?id=0044f68bd780d4447cd7cbbe0d361d9640f61828-9154878-images-thumbs&n=13" 
-                         alt="Mazellov" 
-                         class="avatar-img"
-                         id="avatar">
+                          alt="Mazellov" 
+                          class="avatar-img"
+                          id="avatar">
                     <div id="cooldown-overlay" class="absolute inset-0 flex flex-col items-center justify-center bg-black/60 rounded-full opacity-0 transition-opacity">
                         <span class="text-white font-black text-lg italic tracking-widest">CD</span>
                         <div class="w-12 h-1 bg-purple-500 mt-1 animate-pulse"></div>
@@ -287,56 +293,12 @@
         let isMinigameActive = false;
         let itemsToCollect = 0;
 
-        // --- Донаты: ники и сообщения ---
-        const donationNames = [
-            "Zritel_1337", "xXx_Mazellov_Fan_xXx", "ПятеркаТОП", "isaac_enjoyer", 
-            "DBD_Killer_Main", "ЛысыйНаСтриме", "Dodster_Lover", "REPOgang",
-            "ЗавертинЧел", "FlashЭнергетик", "ModeratorИлюхи", "TwitchPrime777",
-            "КонцертныйФанат", "БородаИлюхи", "StreamSniper228", "Айзек_Мейн",
-            "ПереsдЧел", "КоробкаСВещами", "FlashБанка", "ЧатикМазеллова",
-            "SubGifter9000", "НочнойЗритель", "ДонатерПрофи", "LurkМастер",
-            "ClipperМазеллова", "EmoteСпамер", "РейдБосс", "ХайпТрейн"
-        ];
-
-        const donationMessages = [
-            "На бритьё бороды!",
-            "Илюха, сыграй в Айзека!",
-            "Маз, ты лучший!",
-            "Когда стрим с Пятёркой?",
-            "ДОДСТЕР КОГДА?!",
-            "Привет с ночного просмотра!",
-            "На новый микрофон!",
-            "Сыграй в DBD за киллера!",
-            "Люблю твои стримы ❤️",
-            "REPO лучшая игра!",
-            "Передай привет чату!",
-            "Завертин красавчик!",
-            "На энергетики для ночных стримов",
-            "Илья, ты когда на концерт?",
-            "Бритва уже едет!",
-            "Лысый Маз - лучший Маз",
-            "За хайповый контент!",
-            "Когда переезд завершится?",
-            "Флеш энергетик залетает!",
-            "Чатик, го спам!",
-            "На новую веб-камеру!",
-            "Рейд от меня скоро будет",
-            "Стримь чаще!",
-            "Айзек рандом когда?",
-            "Топ стример СНГ!",
-            "Борода или лысина - выбирай!",
-            "Мазелов кликер топ игра",
-            "На пиццу для стрима!",
-            "Ночной донат залетает",
-            "Когда коллаб с Завертиным?"
-        ];
-
         // --- Система эволюции (4 стадии по уровням) ---
         const evolutionStages = [
             { level: 0, status: "Новичок", img: "https://avatars.mds.yandex.net/i?id=0044f68bd780d4447cd7cbbe0d361d9640f61828-9154878-images-thumbs&n=13" },
-            { level: 20, status: "Илья на концерте", img: "https://i.imgur.com/QxHJZKe.jpeg" },
-            { level: 40, status: "Илья с Завертиным", img: "https://i.imgur.com/7YqJ9Wd.jpeg" },
-            { level: 60, status: "Хайповый Мазелов", img: "https://avatars.mds.yandex.net/i?id=25539a39c94ad594e840b9bdf92b5b8a8a0c6a7b-4120677-images-thumbs&n=13" },
+            { level: 20, status: "Илья на концерте", img: "https://avatars.mds.yandex.net/i?id=468d8d83f35cf9b8c932e628595aa7e2cd3d3539-4825378-images-thumbs&n=13" },
+            { level: 40, status: "Илья с Завертиным", img: "https://avatars.mds.yandex.net/i?id=fd77adf1146c22fdf77bc062599ef82926a2b5eb-10896978-images-thumbs&n=13" },
+            { level: 60, status: "Хайповый илья", img: "https://avatars.mds.yandex.net/i?id=25539a39c94ad594e840b9bdf92b5b8a8a0c6a7b-4120677-images-thumbs&n=13" },
             { level: 80, status: "Звезда Twitch", img: "https://avatars.mds.yandex.net/get-entity_search/2114271/1230453077/SUx182_2x" }
         ];
 
@@ -640,15 +602,8 @@
         }
 
         function triggerDonation() {
-            const amount = Math.floor(50 + Math.random() * 2500);
-            const randomName = donationNames[Math.floor(Math.random() * donationNames.length)];
-            const randomMessage = donationMessages[Math.floor(Math.random() * donationMessages.length)];
-            
+            const amount = Math.floor(100 + Math.random() * 2000);
             const alert = document.getElementById('da-alert');
-            document.getElementById('da-user').innerText = randomName;
-            document.getElementById('da-amount').innerText = amount + ' ₽';
-            document.getElementById('da-msg').innerText = '"' + randomMessage + '"';
-            
             alert.classList.add('active');
             rubles += amount;
             setTimeout(() => { alert.classList.remove('active'); updateUI(); saveGame(); }, 4000);
@@ -677,42 +632,22 @@
                 btn.className = 'w-full text-left p-4 bg-orange-950/10 border border-orange-500/20 rounded-xl hover:bg-orange-500/20 flex items-center gap-4';
                 btn.innerHTML = `<div class="text-2xl">${item.permanent ? '👑' : '⚡'}</div><div class="flex-1"><div class="font-bold text-[11px]">${item.name}</div><div class="text-[8px] text-orange-400 uppercase">${item.desc}</div></div><div class="text-orange-400 font-black text-xs">${item.cost} ₽</div>`;
                 btn.onclick = () => {
-                    if (rubles >= item.cost) {
-                        rubles -= item.cost;
-                        if (item.permanent) { boostsOwned[item.id] = (boostsOwned[item.id] || 0) + 1; }
-                        else { activeBoostMultiplier = item.multiplier; boostEndTime = Date.now() + (item.duration * 1000); }
-                        updateUI(); saveGame();
-                    }
+                     // Placeholder for boost logic if needed
+                     if(rubles >= item.cost) {
+                         rubles -= item.cost;
+                         if(item.permanent) {
+                             boostsOwned[item.id] = (boostsOwned[item.id] || 0) + 1;
+                         } else {
+                             activeBoostMultiplier = item.multiplier;
+                             boostEndTime = Date.now() + item.duration * 1000;
+                         }
+                         updateUI();
+                         saveGame();
+                     }
                 };
                 boostShopList.appendChild(btn);
             });
-
-            setInterval(() => {
-                if (autoViewers > 0) {
-                    let permMult = 1;
-                    Object.keys(boostsOwned).forEach(id => {
-                        const i = boostItems.find(b => b.id === id);
-                        if (i.permanent) permMult *= (1 + (i.multiplier - 1) * boostsOwned[id]);
-                    });
-                    viewers += (autoViewers * permMult) / 10;
-                    currentHype += (autoViewers * permMult) / 10;
-                }
-                updateUI();
-            }, 100);
-
-            setInterval(() => { if (Math.random() > 0.9) triggerDonation(); }, 7000);
-            
-            setInterval(() => {
-                if (Math.random() > 0.7 && !isMinigameActive) {
-                    document.getElementById('minigame-trigger').classList.remove('hidden');
-                }
-            }, 15000);
-
             updateUI();
-        };
-    </script>
-</body>
-</html>
         };
     </script>
 </body>
