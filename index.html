@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Mzlff Clicker</title>
+    <title>Mazellov Clicker - Stream Edition</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <link href="https://fonts.googleapis.com/css2?family=Unbounded:wght@400;700&display=swap" rel="stylesheet">
     <style>
@@ -86,6 +86,18 @@
             opacity: 1;
             transform: translateX(-50%) scale(1);
         }
+        .modal-overlay {
+            position: fixed;
+            inset: 0;
+            background: rgba(0,0,0,0.95);
+            z-index: 2000;
+            display: none;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            text-align: center;
+            padding: 20px;
+        }
         .minigame-overlay {
             position: fixed;
             inset: 0;
@@ -129,7 +141,16 @@
         <source src="https://www.dropbox.com/scl/fi/th9kidjdf1blqezgqlpcz/.mp3?rlkey=59a6wz4w09v35noavrwbiy081&st=zel497ne&dl=1" type="audio/mpeg">
     </audio>
 
-    <!-- UI уведомлений о донатах -->
+    <!-- Финальный экран -->
+    <div id="win-screen" class="modal-overlay">
+        <h1 class="text-6xl font-black text-yellow-500 mb-4 animate-pulse">ВЫ ПРОШЛИ ИГРУ!</h1>
+        <p class="text-xl text-slate-300 mb-8 max-w-xl">Поздравляем! Вы достигли 500 уровня хайпа и стали абсолютной легендой стриминга. Ваш путь был долгим, но вы это сделали!</p>
+        <div class="flex gap-4">
+            <button onclick="closeWinScreen()" class="bg-purple-600 hover:bg-purple-500 text-white font-bold px-8 py-4 rounded-xl transition-all">ПРОДОЛЖИТЬ</button>
+            <button onclick="resetGame()" class="bg-slate-800 hover:bg-red-900 text-white font-bold px-8 py-4 rounded-xl transition-all">ЗАВЕРШИТЬ (СБРОС)</button>
+        </div>
+    </div>
+
     <div id="da-alert" class="donation-alert">
         <div class="font-black italic text-2xl mb-1 uppercase tracking-tighter">DonationAlerts</div>
         <div id="da-user" class="font-bold text-lg">Зритель_1337</div>
@@ -137,7 +158,6 @@
         <div id="da-msg" class="text-sm mt-2 opacity-90 italic">"На бритье!"</div>
     </div>
 
-    <!-- Мини-игра Переезд -->
     <div id="minigame-screen" class="minigame-overlay">
         <h2 class="text-3xl font-black text-white mb-2 italic">ВРЕМЯ ПЕРЕЕЗДА!</h2>
         <p class="text-slate-400 mb-8">Успей собрать все вещи в коробку!</p>
@@ -183,7 +203,6 @@
     </header>
 
     <main class="flex-1 flex overflow-hidden">
-        <!-- Левая часть: Кликер -->
         <div class="flex-1 flex flex-col items-center justify-center p-6 bg-[#020617] relative">
             <div class="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[500px] h-[500px] bg-purple-900/10 blur-[120px] rounded-full"></div>
             
@@ -225,7 +244,6 @@
             </div>
         </div>
 
-        <!-- Правая часть: Сайдбар -->
         <div id="sidebar" class="w-96 bg-slate-900/30 border-l border-slate-800 flex flex-col backdrop-blur-xl">
             <div class="grid grid-cols-2 border-b border-slate-800">
                 <button onclick="switchTab('upgrades')" id="tab-upgrades" class="tab-btn py-4 text-[10px] font-black uppercase tracking-widest border-b-2 border-transparent transition-all active">Стрим</button>
@@ -247,14 +265,27 @@
 
             <div id="content-boosts" class="hidden flex-1 flex flex-col overflow-hidden">
                 <div class="p-4 border-b border-slate-800 bg-orange-950/10">
-                    <p class="text-[10px] text-orange-400 font-bold leading-relaxed uppercase italic">Магазин за донаты</p>
+                    <p class="text-[10px] text-orange-400 font-bold leading-relaxed uppercase italic">Магазин и Обмен</p>
                 </div>
-                <div class="flex-1 overflow-y-auto p-4 space-y-3">
+                <div class="flex-1 overflow-y-auto p-4 space-y-6">
+                    <!-- Панель обмена валют -->
+                    <div class="p-4 bg-slate-800/50 border border-slate-700 rounded-2xl">
+                        <h3 class="text-[10px] font-black text-slate-400 uppercase tracking-widest mb-3">Обмен валют</h3>
+                        <div class="flex flex-col gap-3">
+                            <div class="flex items-center justify-between">
+                                <span class="text-xs font-bold">30 ₽ <span class="text-slate-500">→</span> 5 👁️</span>
+                                <button onclick="convertCurrency(30, 5)" class="bg-orange-600 hover:bg-orange-500 text-[10px] font-bold px-4 py-2 rounded-lg transition-all active:scale-95">ОБМЕНЯТЬ</button>
+                            </div>
+                            <div class="flex items-center justify-between">
+                                <span class="text-xs font-bold">300 ₽ <span class="text-slate-500">→</span> 50 👁️</span>
+                                <button onclick="convertCurrency(300, 50)" class="bg-orange-600 hover:bg-orange-500 text-[10px] font-bold px-4 py-2 rounded-lg transition-all active:scale-95">ОБМЕНЯТЬ</button>
+                            </div>
+                        </div>
+                    </div>
+
                     <div id="boost-shop-list" class="space-y-3"></div>
                 </div>
             </div>
-            
-            <!-- Надпись с версией удалена по запросу -->
         </div>
     </main>
 
@@ -264,11 +295,9 @@
     </div>
 
     <script>
-        // --- Конфигурация донатов ---
-        const donorNames = ["Sashakor321", "Дрейк", "Шеф", "Vyach", "Гвин", "ChapaClutch", "PryatnogoPoleta", "Аноним"];
-        const donorMessages = [
-            "На развитие канала!", "Удачи с переездом!", "Илья, ты лучший!", "За Айзека!", "Просто так, бро", "На Додстер", "Когда стрим по ДБД?", "Побрейся снова налысо!", "Привет из чата!", "Лучший контент!", "Осуждаю, но держи"
-        ];
+        // --- Конфигурация ---
+        const donorNames = ["Аноним", "PryatnogoPoleta", "ChapaClutch", "Vyach", "Гвин", "Шеф", "Дрейк"];
+        const donorMessages = ["На развитие!", "Удачи!", "Илья, лучший!", "За Айзека!", "На Додстер", "Когда стрим?", "Побрейся!"];
 
         // --- Состояние игры ---
         let viewers = 0;
@@ -281,6 +310,7 @@
         let level = 1;
         let isMusicPlaying = false;
         let onCooldown = false;
+        let hasWon = false;
         const COOLDOWN_TIME = 400;
 
         let activeBoostMultiplier = 1;
@@ -288,14 +318,18 @@
 
         let isMinigameActive = false;
         let itemsToCollect = 0;
+        let minigameSpawnTimer = null;
 
-        // --- Эволюция ---
+        // Фото "Мазелов" для всех стадий начиная с 80 уровня
+        const MAZELLOV_ULTIMATE_IMG = "https://avatars.mds.yandex.net/get-entity_search/2114271/1230453077/SUx182_2x";
+
         const evolutionStages = [
             { level: 0, status: "Новичок", img: "https://avatars.mds.yandex.net/i?id=0044f68bd780d4447cd7cbbe0d361d9640f61828-9154878-images-thumbs&n=13" },
             { level: 20, status: "Илья на концерте", img: "https://avatars.mds.yandex.net/i?id=468d8d83f35cf9b8c932e628595aa7e2cd3d3539-4825378-images-thumbs&n=13" },
-            { level: 40, status: "Илья с Завертиным", img: "https://avatars.mds.yandex.net/i?id=fd77adf1146c22fdf77bc062599ef82926a2b5eb-10896978-images-thumbs&n=13" },
+            { level: 40, status: "Илья с завертиным", img: "https://avatars.mds.yandex.net/i?id=fd77adf1146c22fdf77bc062599ef82926a2b5eb-10896978-images-thumbs&n=13" },
             { level: 60, status: "Хайповый Мазелов", img: "https://avatars.mds.yandex.net/i?id=25539a39c94ad594e840b9bdf92b5b8a8a0c6a7b-4120677-images-thumbs&n=13" },
-            { level: 80, status: "Звезда Twitch", img: "https://avatars.mds.yandex.net/get-entity_search/2114271/1230453077/SUx182_2x" }
+            { level: 80, status: "Звезда Twitch", img: MAZELLOV_ULTIMATE_IMG },
+            { level: 500, status: "Бог Стриминга", img: MAZELLOV_ULTIMATE_IMG }
         ];
 
         const upgrades = [
@@ -328,7 +362,8 @@
             '20': { type: 'level', target: 20, used: false, msg: "УРОВЕНЬ ХАЙПА 20 УСТАНОВЛЕН!" },
             '40': { type: 'level', target: 40, used: false, msg: "УРОВЕНЬ ХАЙПА 40 УСТАНОВЛЕН!" },
             '60': { type: 'level', target: 60, used: false, msg: "УРОВЕНЬ ХАЙПА 60 УСТАНОВЛЕН!" },
-            '80': { type: 'level', target: 80, used: false, msg: "УРОВЕНЬ ХАЙПА 80 УСТАНОВЛЕН!" }
+            '80': { type: 'level', target: 80, used: false, msg: "УРОВЕНЬ ХАЙПА 80 УСТАНОВЛЕН!" },
+            '500': { type: 'level', target: 500, used: false, msg: "БОЖЕСТВЕННЫЙ ХАЙП 500 LVL!" }
         };
 
         const viewersEl = document.getElementById('viewers-count');
@@ -341,14 +376,15 @@
         const bgMusic = document.getElementById('bg-music');
         const musicBtn = document.getElementById('music-toggle');
         const statusEl = document.getElementById('character-status');
+        const winScreen = document.getElementById('win-screen');
 
         function saveGame() {
-            const gameState = { viewers, rubles, totalRubles, clickPower, autoViewers, hypeThreshold, currentHype, level, upgradesOwned, boostsOwned, promos };
-            localStorage.setItem('mazellov_clicker_v3_6', JSON.stringify(gameState));
+            const gameState = { viewers, rubles, totalRubles, clickPower, autoViewers, hypeThreshold, currentHype, level, upgradesOwned, boostsOwned, promos, hasWon };
+            localStorage.setItem('mazellov_clicker_v4_1', JSON.stringify(gameState));
         }
 
         function loadGame() {
-            const saved = localStorage.getItem('mazellov_clicker_v3_6');
+            const saved = localStorage.getItem('mazellov_clicker_v4_1');
             if (saved) {
                 try {
                     const data = JSON.parse(saved);
@@ -361,7 +397,8 @@
                     if (data.level !== undefined) level = data.level;
                     if (data.upgradesOwned) upgradesOwned = data.upgradesOwned;
                     if (data.boostsOwned) boostsOwned = data.boostsOwned;
-                    if (data.promos) promos = data.promos;
+                    if (data.promos) Object.assign(promos, data.promos);
+                    if (data.hasWon !== undefined) hasWon = data.hasWon;
                 } catch (e) { console.error(e); }
             }
         }
@@ -385,6 +422,23 @@
             }, 3000);
         }
 
+        function resetGame() {
+            localStorage.removeItem('mazellov_clicker_v4_1');
+            window.location.reload();
+        }
+
+        function closeWinScreen() {
+            winScreen.style.display = 'none';
+            hasWon = true; 
+            saveGame();
+        }
+
+        function checkWin() {
+            if (level >= 500 && !hasWon) {
+                winScreen.style.display = 'flex';
+            }
+        }
+
         function setLevel(target) {
             level = target;
             currentHype = 0;
@@ -393,6 +447,22 @@
                 baseThreshold = Math.floor(baseThreshold * 1.8);
             }
             hypeThreshold = baseThreshold;
+            checkWin();
+            updateUI();
+        }
+
+        function convertCurrency(rubCost, viewerReward) {
+            if (rubles >= rubCost) {
+                rubles -= rubCost;
+                viewers += viewerReward;
+                currentHype += viewerReward;
+                processHype();
+                showToast(`ОБМЕН: +${viewerReward} ЗРИТЕЛЕЙ`, '💰');
+                updateUI();
+                saveGame();
+            } else {
+                showToast("НЕДОСТАТОЧНО ДОНАТОВ", '❌');
+            }
         }
 
         function checkPromo() {
@@ -403,6 +473,7 @@
                     if (promos[code].type === 'viewers') {
                         viewers += promos[code].reward;
                         currentHype += promos[code].reward;
+                        processHype();
                     } else if (promos[code].type === 'level') {
                         setLevel(promos[code].target);
                     }
@@ -410,13 +481,6 @@
                     promos[code].used = true;
                     showToast(promos[code].msg, '🎁');
                     input.value = '';
-                    
-                    while (currentHype >= hypeThreshold) {
-                        currentHype -= hypeThreshold;
-                        level++;
-                        hypeThreshold = Math.floor(hypeThreshold * 1.8);
-                    }
-                    
                     updateUI();
                     saveGame();
                 } else {
@@ -424,6 +488,15 @@
                 }
             } else {
                 showToast("НЕВЕРНЫЙ ПРОМОКОД", '❓');
+            }
+        }
+
+        function processHype() {
+            while (currentHype >= hypeThreshold) {
+                currentHype -= hypeThreshold;
+                level++;
+                hypeThreshold = Math.floor(hypeThreshold * 1.8);
+                checkWin();
             }
         }
 
@@ -440,10 +513,21 @@
                     currentStage = stage;
                 }
             }
-            if (avatar.src !== currentStage.img) {
+
+            if (avatar.src !== currentStage.img || statusEl.innerText !== currentStage.status) {
                 avatar.src = currentStage.img;
                 statusEl.innerText = currentStage.status;
-                showToast(`ЭВОЛЮЦИЯ: ${currentStage.status}`, '🌟');
+                
+                const glow = document.querySelector('.glow-effect');
+                if (level >= 500) {
+                    glow.style.background = 'radial-gradient(circle, rgba(239, 68, 68, 0.6) 0%, transparent 70%)';
+                    avatar.style.borderColor = '#ef4444';
+                    avatar.style.boxShadow = '0 0 50px rgba(239, 68, 68, 0.6)';
+                } else if (level >= 80) {
+                    glow.style.background = 'radial-gradient(circle, rgba(168, 85, 247, 0.4) 0%, transparent 70%)';
+                    avatar.style.borderColor = '#a855f7';
+                    avatar.style.boxShadow = '0 0 30px rgba(168, 85, 247, 0.4)';
+                }
             }
 
             let permMult = 1;
@@ -487,6 +571,7 @@
         }
 
         function startMinigame() {
+            clearTimeout(minigameSpawnTimer);
             document.getElementById('minigame-trigger').classList.add('hidden');
             isMinigameActive = true;
             const screen = document.getElementById('minigame-screen');
@@ -565,12 +650,7 @@
             document.body.appendChild(el);
             setTimeout(() => el.remove(), 800);
 
-            while (currentHype >= hypeThreshold) {
-                currentHype -= hypeThreshold;
-                level++;
-                hypeThreshold = Math.floor(hypeThreshold * 1.8);
-                showToast(`LVL UP: ${level}`, '🔥');
-            }
+            processHype();
 
             onCooldown = true;
             avatar.classList.add('cooldown');
@@ -656,12 +736,7 @@
                     const tickValue = (autoViewers * permMult) / 10;
                     viewers += tickValue;
                     currentHype += tickValue;
-                    
-                    while (currentHype >= hypeThreshold) {
-                        currentHype -= hypeThreshold;
-                        level++;
-                        hypeThreshold = Math.floor(hypeThreshold * 1.8);
-                    }
+                    processHype();
                 }
                 updateUI();
             }, 100);
@@ -669,8 +744,12 @@
             setInterval(() => { if (Math.random() > 0.9) triggerDonation(); }, 7000);
             
             setInterval(() => {
-                if (Math.random() > 0.7 && !isMinigameActive) {
-                    document.getElementById('minigame-trigger').classList.remove('hidden');
+                if (Math.random() > 0.7 && !isMinigameActive && document.getElementById('minigame-trigger').classList.contains('hidden')) {
+                    const trigger = document.getElementById('minigame-trigger');
+                    trigger.classList.remove('hidden');
+                    minigameSpawnTimer = setTimeout(() => {
+                        trigger.classList.add('hidden');
+                    }, 10000);
                 }
             }, 15000);
 
